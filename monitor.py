@@ -183,6 +183,17 @@ def main():
         state["consecutive_failures"] = 0
         state["failure_notified"] = False
 
+    # 初回起動通知 (SMTP経路の疎通確認を兼ねる)
+    if not state.get("start_notified"):
+        total = sum(len(v["slots"]) for v in current.values())
+        send_mail("【JAXA見学監視】監視を開始しました",
+                  f"JAXA筑波宇宙センター 個人見学ツアーの空き監視を開始しました。\n\n"
+                  f"対象: {TARGET_YEAR}年{TARGET_MONTH}月の土日 ({len(current)}日 / 計{total}枠)\n"
+                  f"チェック間隔: 約5分 (GitHub Actions)\n"
+                  f"空きが出た瞬間にこのアドレスへ通知します。\n\n"
+                  f"カレンダー: {BASE}/reservations/calendar?label_id={LABEL_ID}")
+        state["start_notified"] = True
+
     # 差分検出: 残0以下 → 残1以上 になったスロットを通知対象に
     prev_slots = state.get("slots", {})
     newly_available = []
