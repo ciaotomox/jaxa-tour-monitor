@@ -23,7 +23,7 @@ gh workflow run "JAXA Tour Monitor"   # 初回手動実行で動作確認
 |---|---|---|
 | `TARGET_MONTH` | 8 | 対象月 |
 | `TARGET_WEEKDAYS` | `{5, 6}` | 土日のみ。全曜日なら `{0,1,2,3,4,5,6}` |
-| cron (monitor.yml) | `*/5` | GitHub Actionsの最短間隔。月約8,600分消貹するため **publicリポジトリ必須**(privateの無料枠2,000分/月を大幅超過) |
+| cron (monitor.yml) | `*/5` | GitHub Actionsの最短間隔。月約8,600分消費するため **publicリポジトリ必須**(privateの無料枠2,000分/月を大幅超過) |
 
 ※ GitHub Actionsのscheduleは混雑時に数分〜十数分遅延することがあります(仕様)。
 
