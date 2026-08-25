@@ -56,6 +56,18 @@ def save_state(state):
 
 
 # ===================== メール通知 =====================
+# --- Gmail 重要マーク付与（自己宛通知はフィルタが効かないため送信後に IMAP で付与） ---
+try:
+    import sys as _sys
+    from pathlib import Path as _Path
+    for _p in _Path(__file__).resolve().parents[:3]:
+        _sys.path.append(str(_p))
+    from gmail_important import stamp_message_id, mark_important
+except Exception:  # ヘルパーが無くても監視は止めない
+    def stamp_message_id(msg, **_): return None
+    def mark_important(*_, **__): return False
+
+
 def send_mail(subject, body):
     if DRY_RUN:
         print("=== DRY_RUN: メール送信スキップ ===")
@@ -69,10 +81,12 @@ def send_mail(subject, body):
     msg["Subject"] = Header(subject, "utf-8")
     msg["From"] = GMAIL_ADDRESS
     msg["To"] = NOTIFY_TO
+    mid = stamp_message_id(msg)
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30) as server:
         server.login(GMAIL_ADDRESS, GMAIL_APP_PASSWORD)
         server.send_message(msg)
     print(f"メール送信完了: {subject}")
+    mark_important(GMAIL_ADDRESS, GMAIL_APP_PASSWORD, mid, subject=subject)
 
 
 # ===================== スクレイピング =====================
