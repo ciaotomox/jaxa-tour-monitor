@@ -66,6 +66,10 @@ try:
 except Exception:  # ヘルパーが無くても監視は止めない
     def stamp_message_id(msg, **_): return None
     def mark_important(*_, **__): return False
+try:
+    from push_notify import push_ntfy
+except Exception:
+    def push_ntfy(*_, **__): return False
 
 
 def send_mail(subject, body):
@@ -87,6 +91,7 @@ def send_mail(subject, body):
         server.send_message(msg)
     print(f"メール送信完了: {subject}")
     mark_important(GMAIL_ADDRESS, GMAIL_APP_PASSWORD, mid, subject=subject)
+    push_ntfy(subject, body)
 
 
 # ===================== スクレイピング =====================
